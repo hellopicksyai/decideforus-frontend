@@ -43,6 +43,15 @@
   margin: 6px 0;
 }
 
+.btn-secondary {
+  background: #25D366;
+  color: #fff;
+  margin-left: 10px;
+}
+.btn-secondary:hover {
+  opacity: 0.9;
+}
+
 
 @keyframes logo-spin {
   from {

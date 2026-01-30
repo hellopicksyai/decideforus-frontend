@@ -94,6 +94,19 @@ function App() {
 };
 
 
+const shareOnWhatsApp = (recommendation) => {
+  const text = `🍽️ I used DecideForUs AI and it suggested:
+${recommendation.name}
+
+Why: ${recommendation.reason}
+
+Try it here 👉 https://decideforus-frontend.vercel.app/`;
+
+  const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+  window.open(url, "_blank");
+};
+
+
  useEffect(() => {
   const fetchRecommendation = async () => {
     if (screen !== "thinking") return;
@@ -562,9 +575,7 @@ const goBack = () => {
                 ↻ Restart
               </button>
             </div>
-
-
-            
+    
             <div className="app-logo">DecideForUs AI</div>
             <div className="app-title">Food & Place Decision Assistant</div>
           </div>
@@ -590,6 +601,14 @@ const goBack = () => {
                 <button className="btn-primary" onClick={() => setScreen("landing")}>
                   Start Again
                 </button>
+
+                <button
+                  className="btn-secondary"
+                  onClick={() => shareOnWhatsApp(recommendation)}
+                >
+                  Share on WhatsApp
+                </button>
+
               </div>
            </div>
           </div>
