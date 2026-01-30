@@ -46,11 +46,46 @@
 .btn-secondary {
   background: #25D366;
   color: #fff;
-  margin-left: 10px;
+  /* margin-left: 10px; */
 }
 .btn-secondary:hover {
   opacity: 0.9;
 }
+
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+/* WhatsApp – primary CTA */
+.btn-share {
+  background: linear-gradient(135deg, #25D366, #1ebe5d);
+  color: #fff;
+  font-weight: 600;
+  padding: 14px;
+  border-radius: 14px;
+  font-size: 15px;
+}
+
+/* Restart – secondary CTA */
+.btn-restart {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e5e7eb;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+/* Hover / tap feel */
+.btn-share:hover,
+.btn-restart:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
+}
+
 
 
 @keyframes logo-spin {

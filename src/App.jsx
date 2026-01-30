@@ -597,19 +597,23 @@ const goBack = () => {
                 {goingWith} • {time} • {mood} • {foodType} • {budget}
               </p>
 
-              <div className="card-actions">
-                <button className="btn-primary" onClick={() => setScreen("landing")}>
+              <div className="result-actions">
+                <button
+                  className="btn-primary btn-restart"
+                  onClick={() => setScreen("landing")}
+                >
                   Start Again
                 </button>
-
+                
                 <button
-                  className="btn-secondary"
+                  className="btn-secondary btn-share"
                   onClick={() => shareOnWhatsApp(recommendation)}
                 >
                   Share on WhatsApp
                 </button>
 
               </div>
+
            </div>
           </div>
         </div>
