@@ -63,6 +63,8 @@ function Progress({ current, total }) {
 }
 
 function App() {
+  const [location, setLocation] = useState(null);
+  const [locationError, setLocationError] = useState("");
   const [screen, setScreen] = useState("landing");
   const [goingWith, setGoingWith] = useState("");
   const [time, setTime] = useState("");
@@ -71,6 +73,25 @@ function App() {
   const [budget, setBudget] = useState("");
   const [recommendation, setRecommendation] = useState(null);
   const [error, setError] = useState("");
+
+  const getUserLocation = () => {
+  if (!navigator.geolocation) {
+    setLocationError("Location not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      setLocation({
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+      });
+    },
+    () => {
+      setLocationError("Location permission denied");
+    }
+  );
+};
 
 
  useEffect(() => {
@@ -152,9 +173,27 @@ const goBack = () => {
               <p>We’ll decide for you.</p>
 
               <div className="card-actions">
-                <button className="btn-primary" onClick={() => setScreen("q1")}>
+                <button
+                  className="btn-primary"
+                  onClick={() => {
+                    getUserLocation();
+                    setScreen("q1");
+                  }}
+                >
                   Start Decision
                 </button>
+
+                {locationError && (
+                  <p className="helper-text warn">
+                    Location not allowed. Showing popular places near you.
+                  </p>
+                )}
+
+                <p className="helper-text">
+                  We use your location only to suggest nearby places. Nothing is stored.
+                </p>
+
+
               </div>
             </div>
 
@@ -186,7 +225,9 @@ const goBack = () => {
 
           <div className="card">
             <div className="screen">
-              <Progress current={1} total={5} />
+              <p className="progress">
+                Step 1 of 5 • Almost there
+              </p>
               <h2>Who are you going with?</h2>
 
               <div className="option-wrap">
@@ -253,7 +294,10 @@ const goBack = () => {
 
           <div className="card">
             <div className="screen">
-              <Progress current={2} total={5} />
+              <p className="progress">
+                Step 2 of 5 • Almost there
+              </p>
+
               <h2>When is the plan?</h2>
 
               <div className="option-wrap">
@@ -304,7 +348,10 @@ const goBack = () => {
 
           <div className="card">
             <div className="screen">
-              <Progress current={3} total={5} />
+              <p className="progress">
+                Step 3 of 5 • Almost there
+              </p>
+
               <h2>What’s the vibe?</h2>
 
               <div className="option-wrap">
@@ -371,7 +418,10 @@ const goBack = () => {
 
           <div className="card">
             <div className="screen">
-              <Progress current={4} total={5} />
+              <p className="progress">
+                Step 4 of 5 • Almost there
+              </p>
+
               <h2>Food preference?</h2>
 
               <div className="option-wrap">
@@ -430,7 +480,10 @@ const goBack = () => {
 
           <div className="card">
             <div className="screen">
-              <Progress current={5} total={5} />
+              <p className="progress">
+                Step 5 of 5 • Almost there
+              </p>
+
               <h2>Budget per person?</h2>
 
               <div className="option-wrap">
@@ -477,10 +530,13 @@ const goBack = () => {
 
           <div className="card">
             <div className="screen">
-              <h2>Thinking…</h2>
-              <p>Understanding your plan</p>
-              <p>Finding best places</p>
-              <p>Avoiding overcrowded spots</p>
+              <h2>Finding the best spot for you…</h2>
+                <ul className="thinking-list">
+                  <li>Checking nearby places</li>
+                  <li>Matching your vibe</li>
+                  <li>Avoiding overcrowded spots</li>
+                </ul>
+
             
             </div>
           </div>
