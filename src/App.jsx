@@ -604,8 +604,9 @@ const detectLocation = () => {
               
               <span className="badge">High confidence</span>
 
-              <h3>{rec?.name || "No recommendation"}</h3>
-              <p>{rec?.reason || "Try again."}</p>
+              <h3>{recommendation?.name || "Popular Local Restaurant"}</h3>
+              <p>{recommendation?.reason || "A trusted nearby option chosen for you."}</p>
+
 
 
 
