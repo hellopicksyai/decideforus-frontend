@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import "./index.css";
 
+const API_BASE = "https://decideforus-backend.onrender.com/api"; // 🔴 CHANGE THIS ONLY
+
 const THINKING_STEPS = [
   "Understanding your preferences",
   "Scanning nearby places",
@@ -9,7 +11,6 @@ const THINKING_STEPS = [
   "Finding best match for you",
   "Finalizing recommendation"
 ];
-
 
 function OptionButton({ label, onClick }) {
   return (
@@ -19,63 +20,8 @@ function OptionButton({ label, onClick }) {
   );
 }
 
-function getRecommendation({ goingWith, mood, time, foodType, budget }) {
-  // 🔴 Highest Priority: Date + Romantic
-  if (goingWith === "date" && mood === "romantic") {
-    return {
-      name: "Cozy Candlelight Café",
-      reason: "Romantic vibe, quiet seating, and perfect for quality time."
-    };
-  }
-
-  // 🔴 Family always needs comfort
-  if (goingWith === "family") {
-    return {
-      name: "Green Leaf Family Restaurant",
-      reason: "Hygienic, calm atmosphere and family-friendly menu."
-    };
-  }
-
-  // 🟠 Office outings
-  if (goingWith === "office") {
-    return {
-      name: "Business Lunch Hub",
-      reason: "Professional ambience with quick service."
-    };
-  }
-
-  // 🟡 Friends + Fun
-  if (goingWith === "friends" && mood === "fun") {
-    return {
-      name: "The Social Street",
-      reason: "Energetic vibe, affordable food and great for groups."
-    };
-  }
-
-  // 🟢 Budget-sensitive fallback
-  if (budget === "low") {
-    return {
-      name: "Local Food Junction",
-      reason: "Budget-friendly and satisfying choices."
-    };
-  }
-
-  // 🔵 Default safe choice
-  return {
-    name: "Neighborhood Café",
-    reason: "A balanced option that works for most situations."
-  };
-}
-
-function Progress({ current, total }) {
-  return <p className="progress">Step {current} of {total}</p>;
-}
-
 function App() {
-  const [location, setLocation] = useState({
-    lat: null,
-    lng: null
-  });
+  const [location, setLocation] = useState({ lat: null, lng: null });
   const [locationError, setLocationError] = useState("");
   const [screen, setScreen] = useState("landing");
   const [goingWith, setGoingWith] = useState("");
@@ -86,33 +32,60 @@ function App() {
   const [recommendation, setRecommendation] = useState(null);
   const [error, setError] = useState("");
   const [thinkingIndex, setThinkingIndex] = useState(0);
-  
 
-
-  const getUserLocation = () => {
-  if (!navigator.geolocation) {
-    setLocationError("Location not supported");
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      setLocation({
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude,
-      });
-    },
-    () => {
-      setLocationError("Location permission denied");
+  // 📍 Location
+  const detectLocation = () => {
+    if (!navigator.geolocation) {
+      setLocation({ lat: 19.076, lng: 72.8777 });
+      return;
     }
-  );
-};
 
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocation({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        });
+      },
+      () => {
+        setLocation({ lat: 19.076, lng: 72.8777 });
+      }
+    );
+  };
 
-const shareOnWhatsApp = () => {
-  if (!recommendation?.name) return;
+  // 🔥 BACKEND CALL
+  const fetchRecommendation = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/recommend`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mood,
+          goingWith,
+          budget,
+          time,
+          foodType,
+          location,
+        }),
+      });
 
-  const message = `🍽️ Decided for you!
+      const data = await res.json();
+      setRecommendation(data);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to fetch nearby places");
+      setRecommendation({
+        name: "Nearby Restaurant",
+        reason: "A reliable nearby option.",
+      });
+    }
+  };
+
+  // 📤 WhatsApp
+  const shareOnWhatsApp = () => {
+    if (!recommendation?.name) return;
+
+    const message = `🍽️ Decided for you!
 
 📍 ${recommendation.name}
 💡 ${recommendation.reason}
@@ -120,74 +93,56 @@ const shareOnWhatsApp = () => {
 Try it yourself:
 👉 https://decideforus-frontend.vercel.app/`;
 
-  const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
-  window.open(url, "_blank");
-};
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(message)}`,
+      "_blank"
+    );
+  };
 
+  // 🧠 THINKING FLOW (FIXED)
+  useEffect(() => {
+    if (screen === "thinking") {
+      setThinkingIndex(0);
 
-useEffect(() => {
-  if (screen === "thinking") {
-    setThinkingIndex(0);
+      const interval = setInterval(() => {
+        setThinkingIndex((prev) =>
+          prev < THINKING_STEPS.length - 1 ? prev + 1 : prev
+        );
+      }, 700);
 
-    const interval = setInterval(() => {
-      setThinkingIndex((prev) =>
-        prev < THINKING_STEPS.length - 1 ? prev + 1 : prev
-      );
-    }, 700);
+      const timer = setTimeout(async () => {
+        await fetchRecommendation(); // ✅ LIVE DATA
+        clearInterval(interval);
+        setScreen("result");
+      }, 3000);
 
-    const timer = setTimeout(() => {
-      clearInterval(interval);
-      setScreen("result");
-    }, 3000);
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timer);
-    };
-  }
-}, [screen]);
-
+      return () => {
+        clearInterval(interval);
+        clearTimeout(timer);
+      };
+    }
+  }, [screen]);
 
   const restartFlow = () => {
-  setGoingWith("");
-  setTime("");
-  setMood("");
-  setFoodType("");
-  setBudget("");
-  setScreen("landing");
-};
+    setGoingWith("");
+    setTime("");
+    setMood("");
+    setFoodType("");
+    setBudget("");
+    setRecommendation(null);
+    setScreen("landing");
+  };
 
-const goBack = () => {
-  if (screen === "q1") return setScreen("landing");
-  if (screen === "q2") return setScreen("q1");
-  if (screen === "q3") return setScreen("q2");
-  if (screen === "q4") return setScreen("q3");
-  if (screen === "q5") return setScreen("q4");
-  if (screen === "result") return setScreen("q5");
-};
+  const goBack = () => {
+    if (screen === "q1") return setScreen("landing");
+    if (screen === "q2") return setScreen("q1");
+    if (screen === "q3") return setScreen("q2");
+    if (screen === "q4") return setScreen("q3");
+    if (screen === "q5") return setScreen("q4");
+    if (screen === "result") return setScreen("q5");
+  };
 
-const detectLocation = () => {
-  if (!navigator.geolocation) {
-    setLocation({ lat: 19.0760, lng: 72.8777 }); // Mumbai fallback
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      setLocation({
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude
-      });
-    },
-    () => {
-      setLocation({ lat: 19.0760, lng: 72.8777 }); // Permission denied
-    },
-    { timeout: 5000 }
-  );
-};
-
-
-  // ========== LANDING ==========
+  /* ================= LANDING ================= */
   if (screen === "landing") {
     return (
       <div className="container">
@@ -213,7 +168,6 @@ const detectLocation = () => {
                   Start Decision
                 </button>
 
-
                 {locationError && (
                   <p className="helper-text warn">
                     Location not allowed. Showing popular places near you.
@@ -223,18 +177,15 @@ const detectLocation = () => {
                 <p className="helper-text">
                   We use your location only to suggest nearby places. Nothing is stored.
                 </p>
-
-
               </div>
             </div>
-
           </div>
         </div>
       </div>
     );
   }
 
-  // ========== QUESTION 1 ==========
+    // ========== QUESTION 1 ==========
   if (screen === "q1") {
     return (
       <div className="container">
@@ -575,7 +526,7 @@ const detectLocation = () => {
     );
   }
 
-  // ========== RESULT ==========
+    // ========== RESULT ==========
   if (screen === "result") {
     const rec = recommendation;
 
