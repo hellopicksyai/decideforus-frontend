@@ -110,16 +110,18 @@ function App() {
 
 
 const shareOnWhatsApp = (recommendation) => {
-  const text = `🍽️ I used DecideForUs AI and it suggested:
-${recommendation.name}
+  const message = `🍽️ Decided for you!
 
-Why: ${recommendation.reason}
+📍 ${recommendation.name}
+💡 ${recommendation.reason}
 
-Try it here 👉 https://decideforus-frontend.vercel.app/`;
+Try it yourself:
+👉 https://decideforus-frontend.vercel.app/`;
 
-  const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+  const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
   window.open(url, "_blank");
 };
+
 
 
 useEffect(() => {
