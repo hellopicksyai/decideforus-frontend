@@ -109,15 +109,18 @@ function App() {
 };
 
 
-const shareOnWhatsApp = (recommendation) => {
-  const text = `🍽️ I used DecideForUs AI and it suggested:
-${recommendation.name}
+const shareOnWhatsApp = () => {
+  if (!recommendation?.name) return;
 
-Why: ${recommendation.reason}
+  const message = `🍽️ Decided for you!
 
-Try it here 👉 https://decideforus-frontend.vercel.app/`;
+📍 ${recommendation.name}
+💡 ${recommendation.reason}
 
-  const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+Try it yourself:
+👉 https://decideforus-frontend.vercel.app/`;
+
+  const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
   window.open(url, "_blank");
 };
 
@@ -626,7 +629,6 @@ const detectLocation = () => {
                 >
                   Share on WhatsApp
                 </button>
-
 
               </div>
 
