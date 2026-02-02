@@ -73,9 +73,9 @@ function Progress({ current, total }) {
 
 function App() {
   const [location, setLocation] = useState({
-  lat: null,
-  lng: null
-});
+    lat: null,
+    lng: null
+  });
   const [locationError, setLocationError] = useState("");
   const [screen, setScreen] = useState("landing");
   const [goingWith, setGoingWith] = useState("");
@@ -109,7 +109,9 @@ function App() {
 };
 
 
-const shareOnWhatsApp = (recommendation) => {
+const shareOnWhatsApp = () => {
+  if (!recommendation?.name) return;
+
   const message = `🍽️ Decided for you!
 
 📍 ${recommendation.name}
@@ -121,7 +123,6 @@ Try it yourself:
   const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
   window.open(url, "_blank");
 };
-
 
 
 useEffect(() => {
@@ -623,11 +624,12 @@ const detectLocation = () => {
                 </button>
                 
                 <button
-                  className="btn-secondary btn-share"
-                  onClick={() => shareOnWhatsApp(recommendation)}
-                >
-                  Share on WhatsApp
-                </button>
+                    className="btn-secondary btn-share"
+                    onClick={shareOnWhatsApp}
+                  >
+                    Share on WhatsApp
+                  </button>
+
 
               </div>
 
