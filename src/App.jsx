@@ -2,6 +2,15 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import "./index.css";
 
+const THINKING_STEPS = [
+  "Understanding your preferences",
+  "Scanning nearby places",
+  "Checking crowd levels",
+  "Finding best match for you",
+  "Finalizing recommendation"
+];
+
+
 function OptionButton({ label, onClick }) {
   return (
     <button className="btn-option" onClick={onClick}>
@@ -63,7 +72,10 @@ function Progress({ current, total }) {
 }
 
 function App() {
-  const [location, setLocation] = useState(null);
+  const [location, setLocation] = useState({
+  lat: null,
+  lng: null
+});
   const [locationError, setLocationError] = useState("");
   const [screen, setScreen] = useState("landing");
   const [goingWith, setGoingWith] = useState("");
@@ -73,6 +85,9 @@ function App() {
   const [budget, setBudget] = useState("");
   const [recommendation, setRecommendation] = useState(null);
   const [error, setError] = useState("");
+  const [thinkingIndex, setThinkingIndex] = useState(0);
+  
+
 
   const getUserLocation = () => {
   if (!navigator.geolocation) {
@@ -107,49 +122,27 @@ Try it here 👉 https://decideforus-frontend.vercel.app/`;
 };
 
 
- useEffect(() => {
-  const fetchRecommendation = async () => {
-    if (screen !== "thinking") return;
+useEffect(() => {
+  if (screen === "thinking") {
+    setThinkingIndex(0);
 
-    setError("");
-    setRecommendation(null);
+    const interval = setInterval(() => {
+      setThinkingIndex((prev) =>
+        prev < THINKING_STEPS.length - 1 ? prev + 1 : prev
+      );
+    }, 700);
 
-    try {
-      const res = await fetch("https://decideforus-backend.onrender.com/api/recommend", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          goingWith,
-          time,
-          mood,
-          foodType,
-          budget,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data?.error || "Something went wrong");
-        setScreen("result");
-        return;
-      }
-
-      setRecommendation(data);
-
-      setTimeout(() => {
-        setScreen("result");
-      }, 800);
-    } catch (err) {
-      setError("Backend not running / API error");
+    const timer = setTimeout(() => {
+      clearInterval(interval);
       setScreen("result");
-    }
-  };
+    }, 3000);
 
-  fetchRecommendation();
-}, [screen, goingWith, time, mood, foodType, budget]);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timer);
+    };
+  }
+}, [screen]);
 
 
   const restartFlow = () => {
@@ -170,6 +163,27 @@ const goBack = () => {
   if (screen === "result") return setScreen("q5");
 };
 
+const detectLocation = () => {
+  if (!navigator.geolocation) {
+    setLocation({ lat: 19.0760, lng: 72.8777 }); // Mumbai fallback
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      setLocation({
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude
+      });
+    },
+    () => {
+      setLocation({ lat: 19.0760, lng: 72.8777 }); // Permission denied
+    },
+    { timeout: 5000 }
+  );
+};
+
+
   // ========== LANDING ==========
   if (screen === "landing") {
     return (
@@ -189,12 +203,13 @@ const goBack = () => {
                 <button
                   className="btn-primary"
                   onClick={() => {
-                    getUserLocation();
+                    detectLocation();
                     setScreen("q1");
                   }}
                 >
                   Start Decision
                 </button>
+
 
                 {locationError && (
                   <p className="helper-text warn">
@@ -543,14 +558,13 @@ const goBack = () => {
 
           <div className="card">
             <div className="screen">
-              <h2>Finding the best spot for you…</h2>
-                <ul className="thinking-list">
-                  <li>Checking nearby places</li>
-                  <li>Matching your vibe</li>
-                  <li>Avoiding overcrowded spots</li>
-                </ul>
-
-            
+                <h2>Thinking 🤔</h2>
+                <p className="thinking-text">
+                  {THINKING_STEPS[thinkingIndex]}...
+                </p>
+                <div className="dot-loader">
+                  <span></span><span></span><span></span>
+                </div>
             </div>
           </div>
         </div>
