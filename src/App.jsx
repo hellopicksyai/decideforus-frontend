@@ -22,7 +22,6 @@ function OptionButton({ label, onClick }) {
 
 function App() {
   const [location, setLocation] = useState({ lat: null, lng: null });
-  const [locationError, setLocationError] = useState("");
   const [screen, setScreen] = useState("landing");
   const [goingWith, setGoingWith] = useState("");
   const [time, setTime] = useState("");
