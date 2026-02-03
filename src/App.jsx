@@ -240,7 +240,7 @@ Try it yourself:
         <div className="app-shell">
           <div className="card">
             <div className="screen">
-              <h2>Thinking 🤔</h2>
+              <h2>Thinkings 🤔</h2>
               <p>{THINKING_STEPS[thinkingIndex]}...</p>
             </div>
           </div>
