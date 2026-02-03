@@ -76,14 +76,19 @@ function App() {
 
       const data = await res.json();
       setRecommendation(data);
+      return data;
     } catch (err) {
       console.error(err);
       setError("Failed to fetch nearby places");
-      setRecommendation({
+
+       const fallback = {
         name: "Nearby Restaurant",
         reason: "A reliable nearby option.",
-      });
-    }
+      };
+
+       setRecommendation(fallback);
+          return fallback;
+        }
   };
 
   // 📤 WhatsApp
@@ -115,9 +120,9 @@ Try it yourself:
         );
       }, 700);
 
-      const timer = setTimeout(async () => {
-        await fetchRecommendation();
-        if (recommendation) {
+       const timer = setTimeout(async () => {
+        const data = await fetchRecommendation();
+        if (data) {
           setScreen("result");
         }
         clearInterval(interval);
