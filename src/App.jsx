@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import "./index.css";
 
-const API_BASE = "https://decideforus-backend.onrender.com/api";
+const API_BASE = "https://decideforus-backend.onrender.com/api"; // 🔴 CHANGE THIS ONLY
 
 const THINKING_STEPS = [
   "Understanding your preferences",
   "Scanning nearby places",
   "Checking crowd levels",
   "Finding best match for you",
-  "Finalizing recommendation",
+  "Finalizing recommendation"
 ];
 
 function OptionButton({ label, onClick }) {
@@ -22,6 +22,7 @@ function OptionButton({ label, onClick }) {
 
 function App() {
   const [location, setLocation] = useState({ lat: null, lng: null });
+  const [locationError, setLocationError] = useState("");
   const [screen, setScreen] = useState("landing");
   const [goingWith, setGoingWith] = useState("");
   const [time, setTime] = useState("");
@@ -29,8 +30,8 @@ function App() {
   const [foodType, setFoodType] = useState("");
   const [budget, setBudget] = useState("");
   const [recommendation, setRecommendation] = useState(null);
-  const [thinkingIndex, setThinkingIndex] = useState(0);
   const [error, setError] = useState("");
+  const [thinkingIndex, setThinkingIndex] = useState(0);
 
   // 📍 Location
   const detectLocation = () => {
@@ -52,8 +53,9 @@ function App() {
     );
   };
 
-  // 🔥 BACKEND CALL (FIXED)
+  // 🔥 BACKEND CALL
   const fetchRecommendation = async () => {
+
     if (!location?.lat || !location?.lng) {
       throw new Error("Location not ready");
     }
@@ -74,22 +76,35 @@ function App() {
 
       const data = await res.json();
       setRecommendation(data);
-      return data; // ✅ IMPORTANT FIX
     } catch (err) {
       console.error(err);
       setError("Failed to fetch nearby places");
-
-      const fallback = {
+      setRecommendation({
         name: "Nearby Restaurant",
         reason: "A reliable nearby option.",
-      };
-
-      setRecommendation(fallback);
-      return fallback;
+      });
     }
   };
 
-  // 🧠 THINKING FLOW (FINAL FIX)
+  // 📤 WhatsApp
+  const shareOnWhatsApp = () => {
+    if (!recommendation?.name) return;
+
+    const message = `🍽️ Decided for you!
+
+📍 ${recommendation.name}
+💡 ${recommendation.reason}
+
+Try it yourself:
+👉 https://decideforus-frontend.vercel.app/`;
+
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(message)}`,
+      "_blank"
+    );
+  };
+
+  // 🧠 THINKING FLOW (FIXED)
   useEffect(() => {
     if (screen === "thinking") {
       setThinkingIndex(0);
@@ -101,12 +116,13 @@ function App() {
       }, 700);
 
       const timer = setTimeout(async () => {
-        const data = await fetchRecommendation();
-        if (data) {
+        await fetchRecommendation();
+        if (recommendation) {
           setScreen("result");
         }
         clearInterval(interval);
       }, 3000);
+
 
       return () => {
         clearInterval(interval);
@@ -132,23 +148,6 @@ function App() {
     if (screen === "q4") return setScreen("q3");
     if (screen === "q5") return setScreen("q4");
     if (screen === "result") return setScreen("q5");
-  };
-
-  const shareOnWhatsApp = () => {
-    if (!recommendation?.name) return;
-
-    const message = `🍽️ Decided for you!
-
-📍 ${recommendation.name}
-💡 ${recommendation.reason}
-
-Try it yourself:
-👉 https://decideforus-frontend.vercel.app/`;
-
-    window.open(
-      `https://wa.me/?text=${encodeURIComponent(message)}`,
-      "_blank"
-    );
   };
 
   /* ================= LANDING ================= */
