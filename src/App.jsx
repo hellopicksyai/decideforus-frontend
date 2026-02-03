@@ -58,8 +58,14 @@ function App() {
   // 🔥 BACKEND CALL (SAFE)
   const fetchRecommendation = async () => {
     if (!location?.lat || !location?.lng) {
-      return null;
-    }
+  const fallback = {
+    name: "Nearby Restaurant",
+    reason: "Popular place near you.",
+    };
+    setRecommendation(fallback);
+    return fallback;
+  }
+
 
     try {
       const res = await fetch(`${API_BASE}/recommend`, {
