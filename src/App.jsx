@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import "./index.css";
 
-const API_BASE = "https://decideforus-backend.onrender.com/api"; // 🔴 CHANGE THIS ONLY
+const API_BASE = "https://decideforus-backend.onrender.com/api";
 
 const THINKING_STEPS = [
   "Understanding your preferences",
   "Scanning nearby places",
   "Checking crowd levels",
   "Finding best match for you",
-  "Finalizing recommendation"
+  "Finalizing recommendation",
 ];
 
 function OptionButton({ label, onClick }) {
@@ -22,7 +22,6 @@ function OptionButton({ label, onClick }) {
 
 function App() {
   const [location, setLocation] = useState({ lat: null, lng: null });
-  const [locationError, setLocationError] = useState("");
   const [screen, setScreen] = useState("landing");
   const [goingWith, setGoingWith] = useState("");
   const [time, setTime] = useState("");
@@ -30,8 +29,8 @@ function App() {
   const [foodType, setFoodType] = useState("");
   const [budget, setBudget] = useState("");
   const [recommendation, setRecommendation] = useState(null);
-  const [error, setError] = useState("");
   const [thinkingIndex, setThinkingIndex] = useState(0);
+  const [error, setError] = useState("");
 
   // 📍 Location
   const detectLocation = () => {
@@ -53,8 +52,12 @@ function App() {
     );
   };
 
-  // 🔥 BACKEND CALL
+  // 🔥 BACKEND CALL (FIXED)
   const fetchRecommendation = async () => {
+    if (!location?.lat || !location?.lng) {
+      throw new Error("Location not ready");
+    }
+
     try {
       const res = await fetch(`${API_BASE}/recommend`, {
         method: "POST",
@@ -71,35 +74,22 @@ function App() {
 
       const data = await res.json();
       setRecommendation(data);
+      return data; // ✅ IMPORTANT FIX
     } catch (err) {
       console.error(err);
       setError("Failed to fetch nearby places");
-      setRecommendation({
+
+      const fallback = {
         name: "Nearby Restaurant",
         reason: "A reliable nearby option.",
-      });
+      };
+
+      setRecommendation(fallback);
+      return fallback;
     }
   };
 
-  // 📤 WhatsApp
-  const shareOnWhatsApp = () => {
-    if (!recommendation?.name) return;
-
-    const message = `🍽️ Decided for you!
-
-📍 ${recommendation.name}
-💡 ${recommendation.reason}
-
-Try it yourself:
-👉 https://decideforus-frontend.vercel.app/`;
-
-    window.open(
-      `https://wa.me/?text=${encodeURIComponent(message)}`,
-      "_blank"
-    );
-  };
-
-  // 🧠 THINKING FLOW (FIXED)
+  // 🧠 THINKING FLOW (FINAL FIX)
   useEffect(() => {
     if (screen === "thinking") {
       setThinkingIndex(0);
@@ -111,9 +101,11 @@ Try it yourself:
       }, 700);
 
       const timer = setTimeout(async () => {
-        await fetchRecommendation(); // ✅ LIVE DATA
+        const data = await fetchRecommendation();
+        if (data) {
+          setScreen("result");
+        }
         clearInterval(interval);
-        setScreen("result");
       }, 3000);
 
       return () => {
@@ -142,6 +134,23 @@ Try it yourself:
     if (screen === "result") return setScreen("q5");
   };
 
+  const shareOnWhatsApp = () => {
+    if (!recommendation?.name) return;
+
+    const message = `🍽️ Decided for you!
+
+📍 ${recommendation.name}
+💡 ${recommendation.reason}
+
+Try it yourself:
+👉 https://decideforus-frontend.vercel.app/`;
+
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(message)}`,
+      "_blank"
+    );
+  };
+
   /* ================= LANDING ================= */
   if (screen === "landing") {
     return (
@@ -157,27 +166,15 @@ Try it yourself:
               <h1>Can’t decide what to eat?</h1>
               <p>We’ll decide for you.</p>
 
-              <div className="card-actions">
-                <button
-                  className="btn-primary"
-                  onClick={() => {
-                    detectLocation();
-                    setScreen("q1");
-                  }}
-                >
-                  Start Decision
-                </button>
-
-                {locationError && (
-                  <p className="helper-text warn">
-                    Location not allowed. Showing popular places near you.
-                  </p>
-                )}
-
-                <p className="helper-text">
-                  We use your location only to suggest nearby places. Nothing is stored.
-                </p>
-              </div>
+              <button
+                className="btn-primary"
+                onClick={() => {
+                  detectLocation();
+                  setScreen("q1");
+                }}
+              >
+                Start Decision
+              </button>
             </div>
           </div>
         </div>
@@ -185,65 +182,49 @@ Try it yourself:
     );
   }
 
-    // ========== QUESTION 1 ==========
-  if (screen === "q1") {
+  /* ================= QUESTIONS ================= */
+  const steps = {
+    q1: ["Who are you going with?", [
+      ["Friends", () => { setGoingWith("friends"); setScreen("q2"); }],
+      ["Date / Partner", () => { setGoingWith("date"); setScreen("q2"); }],
+      ["Family", () => { setGoingWith("family"); setScreen("q2"); }],
+      ["Office Team", () => { setGoingWith("office"); setScreen("q2"); }],
+    ]],
+    q2: ["When is the plan?", [
+      ["Lunch", () => { setTime("lunch"); setScreen("q3"); }],
+      ["Dinner", () => { setTime("dinner"); setScreen("q3"); }],
+    ]],
+    q3: ["What’s the vibe?", [
+      ["Casual", () => { setMood("casual"); setScreen("q4"); }],
+      ["Quiet", () => { setMood("quiet"); setScreen("q4"); }],
+      ["Fun", () => { setMood("fun"); setScreen("q4"); }],
+      ["Romantic", () => { setMood("romantic"); setScreen("q4"); }],
+    ]],
+    q4: ["Food preference?", [
+      ["Veg", () => { setFoodType("veg"); setScreen("q5"); }],
+      ["Non-veg", () => { setFoodType("non-veg"); setScreen("q5"); }],
+      ["Mixed", () => { setFoodType("mixed"); setScreen("q5"); }],
+    ]],
+    q5: ["Budget per person?", [
+      ["₹ Budget", () => { setBudget("low"); setScreen("thinking"); }],
+      ["₹₹ Moderate", () => { setBudget("medium"); setScreen("thinking"); }],
+      ["₹₹₹ Premium", () => { setBudget("high"); setScreen("thinking"); }],
+    ]],
+  };
+
+  if (steps[screen]) {
+    const [title, options] = steps[screen];
+
     return (
       <div className="container">
         <div className="app-shell">
-          <div className="app-header">
-            <div className="header-actions">
-              <button className="btn-option" onClick={goBack}>
-                ← Back
-              </button>
-
-              <button className="btn-option" onClick={restartFlow}>
-                ↻ Restart
-              </button>
-            </div>
-      
-            <div className="app-logo">DecideForUs AI</div>
-            <div className="app-title">Food & Place Decision Assistant</div>
-          </div>
-
           <div className="card">
             <div className="screen">
-              <p className="progress">
-                Step 1 of 5 • Almost there
-              </p>
-              <h2>Who are you going with?</h2>
-
+              <h2>{title}</h2>
               <div className="option-wrap">
-                <OptionButton
-                  label="Friends"
-                  onClick={() => {
-                    setGoingWith("friends");
-                    setScreen("q2");
-                  }}
-                />
-
-                <OptionButton
-                  label="Date / Partner"
-                  onClick={() => {
-                    setGoingWith("date");
-                    setScreen("q2");
-                  }}
-                />
-
-                <OptionButton
-                  label="Family"
-                  onClick={() => {
-                    setGoingWith("family");
-                    setScreen("q2");
-                  }}
-                />
-
-                <OptionButton
-                  label="Office Team"
-                  onClick={() => {
-                    setGoingWith("office");
-                    setScreen("q2");
-                  }}
-                />
+                {options.map(([label, action]) => (
+                  <OptionButton key={label} label={label} onClick={action} />
+                ))}
               </div>
             </div>
           </div>
@@ -252,273 +233,15 @@ Try it yourself:
     );
   }
 
-  // ========== QUESTION 2 ==========
-  if (screen === "q2") {
-    return (
-      <div className="container">
-        <div className="app-shell">
-          <div className="app-header">
-            <div className="header-actions">
-              <button className="btn-option" onClick={goBack}>
-                ← Back
-              </button>
-
-              <button className="btn-option" onClick={restartFlow}>
-                ↻ Restart
-              </button>
-            </div>
-
-
-            
-            <div className="app-logo">DecideForUs AI</div>
-            <div className="app-title">Food & Place Decision Assistant</div>
-          </div>
-
-          <div className="card">
-            <div className="screen">
-              <p className="progress">
-                Step 2 of 5 • Almost there
-              </p>
-
-              <h2>When is the plan?</h2>
-
-              <div className="option-wrap">
-                <OptionButton
-                  label="Lunch"
-                  onClick={() => {
-                    setTime("lunch");
-                    setScreen("q3");
-                  }}
-                />
-
-                <OptionButton
-                  label="Dinner"
-                  onClick={() => {
-                    setTime("dinner");
-                    setScreen("q3");
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ========== QUESTION 3 ==========
-  if (screen === "q3") {
-    return (
-      <div className="container">
-        <div className="app-shell">
-          <div className="app-header">
-            <div className="header-actions">
-              <button className="btn-option" onClick={goBack}>
-                ← Back
-              </button>
-
-              <button className="btn-option" onClick={restartFlow}>
-                ↻ Restart
-              </button>
-            </div>
-
-
-            
-            <div className="app-logo">DecideForUs AI</div>
-            <div className="app-title">Food & Place Decision Assistant</div>
-          </div>
-
-          <div className="card">
-            <div className="screen">
-              <p className="progress">
-                Step 3 of 5 • Almost there
-              </p>
-
-              <h2>What’s the vibe?</h2>
-
-              <div className="option-wrap">
-                <OptionButton
-                  label="Casual"
-                  onClick={() => {
-                    setMood("casual");
-                    setScreen("q4");
-                  }}
-                />
-
-                <OptionButton
-                  label="Quiet"
-                  onClick={() => {
-                    setMood("quiet");
-                    setScreen("q4");
-                  }}
-                />
-
-                <OptionButton
-                  label="Fun"
-                  onClick={() => {
-                    setMood("fun");
-                    setScreen("q4");
-                  }}
-                />
-
-                <OptionButton
-                  label="Romantic"
-                  onClick={() => {
-                    setMood("romantic");
-                    setScreen("q4");
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ========== QUESTION 4 ==========
-  if (screen === "q4") {
-    return (
-      <div className="container">
-        <div className="app-shell">
-          <div className="app-header">
-            <div className="header-actions">
-              <button className="btn-option" onClick={goBack}>
-                ← Back
-              </button>
-
-              <button className="btn-option" onClick={restartFlow}>
-                ↻ Restart
-              </button>
-            </div>
-
-
-            
-            <div className="app-logo">DecideForUs AI</div>
-            <div className="app-title">Food & Place Decision Assistant</div>
-          </div>
-
-          <div className="card">
-            <div className="screen">
-              <p className="progress">
-                Step 4 of 5 • Almost there
-              </p>
-
-              <h2>Food preference?</h2>
-
-              <div className="option-wrap">
-                <OptionButton
-                  label="Veg"
-                  onClick={() => {
-                    setFoodType("veg");
-                    setScreen("q5");
-                  }}
-                />
-
-                <OptionButton
-                  label="Non-veg"
-                  onClick={() => {
-                    setFoodType("non-veg");
-                    setScreen("q5");
-                  }}
-                />
-
-                <OptionButton
-                  label="Mixed"
-                  onClick={() => {
-                    setFoodType("mixed");
-                    setScreen("q5");
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ========== QUESTION 5 ==========
-  if (screen === "q5") {
-    return (
-      <div className="container">
-        <div className="app-shell">
-          <div className="app-header">
-            <div className="header-actions">
-              <button className="btn-option" onClick={goBack}>
-                ← Back
-              </button>
-
-              <button className="btn-option" onClick={restartFlow}>
-                ↻ Restart
-              </button>
-            </div>
-
-
-            
-            <div className="app-logo">DecideForUs AI</div>
-            <div className="app-title">Food & Place Decision Assistant</div>
-          </div>
-
-          <div className="card">
-            <div className="screen">
-              <p className="progress">
-                Step 5 of 5 • Almost there
-              </p>
-
-              <h2>Budget per person?</h2>
-
-              <div className="option-wrap">
-                <OptionButton
-                  label="₹ Budget"
-                  onClick={() => {
-                    setBudget("low");
-                    setScreen("thinking");
-                  }}
-                />
-
-                <OptionButton
-                  label="₹₹ Moderate"
-                  onClick={() => {
-                    setBudget("medium");
-                    setScreen("thinking");
-                  }}
-                />
-
-                <OptionButton
-                  label="₹₹₹ Premium"
-                  onClick={() => {
-                    setBudget("high");
-                    setScreen("thinking");
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ========== THINKING ==========
+  /* ================= THINKING ================= */
   if (screen === "thinking") {
     return (
       <div className="container">
         <div className="app-shell">
-          <div className="app-header">
-            <div className="app-logo">DecideForUs AI</div>
-            <div className="app-title">Food & Place Decision Assistant</div>
-          </div>
-
           <div className="card">
             <div className="screen">
-                <h2>Thinking 🤔</h2>
-                <p className="thinking-text">
-                  {THINKING_STEPS[thinkingIndex]}...
-                </p>
-                <div className="dot-loader">
-                  <span></span><span></span><span></span>
-                </div>
+              <h2>Thinking 🤔</h2>
+              <p>{THINKING_STEPS[thinkingIndex]}...</p>
             </div>
           </div>
         </div>
@@ -526,64 +249,32 @@ Try it yourself:
     );
   }
 
-    // ========== RESULT ==========
+  /* ================= RESULT ================= */
   if (screen === "result") {
-    const rec = recommendation;
-
     return (
       <div className="container">
         <div className="app-shell">
-          <div className="app-header">
-            <div className="header-actions">
-              <button className="btn-option" onClick={goBack}>
-                ← Back
-              </button>
-
-              <button className="btn-option" onClick={restartFlow}>
-                ↻ Restart
-              </button>
-            </div>
-    
-            <div className="app-logo">DecideForUs AI</div>
-            <div className="app-title">Food & Place Decision Assistant</div>
-          </div>
-
           <div className="card">
-           <div className="screen">
+            <div className="screen">
               <h2>Here’s our recommendation</h2>
 
-              {error && <p style={{ color: "red" }}>{error}</p>}
-              
               <span className="badge">High confidence</span>
 
-              <h3>{recommendation?.name || "Popular Local Restaurant"}</h3>
-              <p>{recommendation?.reason || "A trusted nearby option chosen for you."}</p>
-
-
-
+              <h3>{recommendation?.name}</h3>
+              <p>{recommendation?.reason}</p>
 
               <p className="meta">
                 {goingWith} • {time} • {mood} • {foodType} • {budget}
               </p>
 
-              <div className="result-actions">
-                <button
-                  className="btn-primary btn-restart"
-                  onClick={() => setScreen("landing")}
-                >
-                  Start Again
-                </button>
-                
-                <button
-                  className="btn-secondary btn-share"
-                  onClick={() => shareOnWhatsApp(recommendation)}
-                >
-                  Share on WhatsApp
-                </button>
+              <button className="btn-primary" onClick={restartFlow}>
+                Start Again
+              </button>
 
-              </div>
-
-           </div>
+              <button className="btn-secondary" onClick={shareOnWhatsApp}>
+                Share on WhatsApp
+              </button>
+            </div>
           </div>
         </div>
       </div>
