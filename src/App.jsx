@@ -35,9 +35,10 @@ function App() {
 
   // 📍 Location
   const detectLocation = () => {
+  return new Promise((resolve) => {
     if (!navigator.geolocation) {
-      setLocationError("Location not supported");
       setLocation({ lat: 19.076, lng: 72.8777 });
+      resolve();
       return;
     }
 
@@ -47,13 +48,16 @@ function App() {
           lat: pos.coords.latitude,
           lng: pos.coords.longitude,
         });
+        resolve();
       },
       () => {
-        setLocationError("Location permission denied");
         setLocation({ lat: 19.076, lng: 72.8777 });
+        resolve();
       }
     );
-  };
+  });
+};
+
 
   // 🔥 BACKEND CALL (SAFE)
   const fetchRecommendation = async () => {
@@ -176,13 +180,20 @@ Try it yourself:
               <div className="card-actions">
                 <button
                   className="btn-primary"
-                  onClick={() => {
-                    detectLocation();
+                  onClick={async () => {
+                    await detectLocation();
+
+                    if (!location.lat || !location.lng) {
+                      alert("Please allow location to get nearby restaurants");
+                      return;
+                    }
+
                     setScreen("q1");
                   }}
                 >
                   Start Decision
                 </button>
+
 
                 {locationError && (
                   <p className="helper-text warn">
