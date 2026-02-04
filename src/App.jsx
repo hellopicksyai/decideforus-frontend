@@ -34,11 +34,10 @@ function App() {
   const [thinkingIndex, setThinkingIndex] = useState(0);
 
   // 📍 Location
-  const detectLocation = () => {
-  return new Promise((resolve) => {
+ const detectLocation = () => {
+  return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
-      setLocation({ lat: 19.076, lng: 72.8777 });
-      resolve();
+      reject("Geolocation not supported");
       return;
     }
 
@@ -48,15 +47,16 @@ function App() {
           lat: pos.coords.latitude,
           lng: pos.coords.longitude,
         });
-        resolve();
+        resolve(true);
       },
       () => {
-        setLocation({ lat: 19.076, lng: 72.8777 });
-        resolve();
+        setLocationError("Please enable location to get nearby restaurants");
+        reject(false);
       }
     );
   });
 };
+
 
 
   // 🔥 BACKEND CALL (SAFE)
@@ -181,18 +181,18 @@ Try it yourself:
                 <button
                   className="btn-primary"
                   onClick={async () => {
-                    await detectLocation();
-
-                    if (!location.lat || !location.lng) {
-                      alert("Please allow location to get nearby restaurants");
-                      return;
+                    try {
+                      await detectLocation();   // 🔥 Triggers browser popup
+                      setScreen("q1");          // Only if allowed
+                    } catch {
+                      // Do nothing, message already shown
                     }
-
-                    setScreen("q1");
                   }}
                 >
                   Start Decision
                 </button>
+
+
 
 
                 {locationError && (
