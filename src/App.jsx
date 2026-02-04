@@ -33,29 +33,32 @@ function App() {
   const [error, setError] = useState("");
   const [thinkingIndex, setThinkingIndex] = useState(0);
 
-  // 📍 Location
- const detectLocation = () => {
-  return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
-      reject("Geolocation not supported");
-      return;
-    }
+  useEffect(() => {
+  detectLocation();
+}, []);
 
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocation({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-        });
-        resolve(true);
-      },
-      () => {
-        setLocationError("Please enable location to get nearby restaurants");
-        reject(false);
-      }
-    );
-  });
+
+  // 📍 Location
+const detectLocation = () => {
+  if (!navigator.geolocation) {
+    setLocationError("Location not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      setLocation({
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+      });
+      setLocationError(""); // clear error
+    },
+    () => {
+      setLocationError("Location not allowed. Showing popular places near you.");
+    }
+  );
 };
+
 
 
 
@@ -180,17 +183,12 @@ Try it yourself:
               <div className="card-actions">
                 <button
                   className="btn-primary"
-                  onClick={async () => {
-                    try {
-                      await detectLocation();   // 🔥 Triggers browser popup
-                      setScreen("q1");          // Only if allowed
-                    } catch {
-                      // Do nothing, message already shown
-                    }
-                  }}
+                  disabled={!location.lat || !location.lng}
+                  onClick={() => setScreen("q1")}
                 >
                   Start Decision
                 </button>
+
 
 
 
@@ -561,15 +559,7 @@ Try it yourself:
       <div className="container">
         <div className="app-shell">
           <div className="app-header">
-            <div className="header-actions">
-              <button className="btn-option" onClick={goBack}>
-                ← Back
-              </button>
-
-              <button className="btn-option" onClick={restartFlow}>
-                ↻ Restart
-              </button>
-            </div>
+            
     
             <div className="app-logo">DecideForUs AI</div>
             <div className="app-title">Food & Place Decision Assistant</div>
