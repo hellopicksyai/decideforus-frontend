@@ -48,6 +48,8 @@ function App() {
   const [loadingAuth, setLoadingAuth] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showMenu, setShowMenu] = useState(false);
+
 
   useEffect(() => {
   const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -303,35 +305,65 @@ if (screen === "landing") {
     <div className="landing-container light-theme">
 
       {/* Navbar */}
-      <nav className="landing-nav">
-        <div className="nav-logo">DecideForUs</div>
+     <nav className="landing-nav">
 
-        {user ? (
-          <div className="nav-user">
+  <div className="nav-logo">DecideForUs</div>
 
-            <span>
-              {user.displayName || user.email}
-            </span>
+  {user ? (
+    <div className="nav-user">
 
-            <button
-              className="nav-login-btn"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
-
-          </div>
+      {/* Avatar */}
+      <div
+        className="nav-avatar"
+        onClick={() => setShowMenu(!showMenu)}
+      >
+        {user.photoURL ? (
+          <img src={user.photoURL} alt="user" />
         ) : (
-          <button
-            className="nav-login-btn"
-            onClick={handleGoogleLogin}
-          >
-            Login
-          </button>
+          <span>{user.email[0].toUpperCase()}</span>
         )}
+      </div>
 
+      {/* Dropdown */}
+      {showMenu && (
+        <div className="nav-dropdown">
 
-      </nav>
+          <p className="nav-name">
+            {user.displayName || user.email}
+          </p>
+
+          <button
+            className="nav-dropdown-btn"
+            onClick={() => {
+              setShowMenu(false);
+              setScreen("landing");
+            }}
+          >
+            Dashboard
+          </button>
+
+          <button
+            className="nav-dropdown-btn logout"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+
+        </div>
+      )}
+
+    </div>
+  ) : (
+    <button
+      className="nav-login-btn"
+      onClick={handleGoogleLogin}
+    >
+      Login
+    </button>
+  )}
+
+</nav>
+
 
       {/* Hero */}
       <div className="landing-hero">
