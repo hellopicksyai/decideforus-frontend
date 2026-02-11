@@ -1,6 +1,16 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import "./index.css";
+import { auth } from "./firebase";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from "firebase/auth";
+
 
 const API_BASE = "https://decideforus-backend.onrender.com/api";
 
@@ -20,6 +30,8 @@ function OptionButton({ label, onClick }) {
   );
 }
 
+
+
 function App() {
   const [location, setLocation] = useState({ lat: null, lng: null });
   const [locationError, setLocationError] = useState(""); // ✅ FIX
@@ -32,11 +44,69 @@ function App() {
   const [recommendation, setRecommendation] = useState(null);
   const [error, setError] = useState("");
   const [thinkingIndex, setThinkingIndex] = useState(0);
+  const [user, setUser] = useState(null);
+  const [loadingAuth, setLoadingAuth] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    setUser(currentUser);
+    setLoadingAuth(false);
+  });
+
+  return () => unsubscribe();
+}, []);
+
+
+const handleGoogleLogin = async () => {
+  const provider = new GoogleAuthProvider();
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const handleSignup = async () => {
+  if (!email || !password) {
+    alert("Please enter email and password");
+    return;
+  }
+
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    alert("Account created successfully ✅");
+  } catch (err) {
+    alert(err.message); // show Firebase error
+    console.error(err);
+  }
+};
+
+const handleLogin = async () => {
+  if (!email || !password) {
+    alert("Please enter email and password");
+    return;
+  }
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    alert("Login successful ✅");
+  } catch (err) {
+    alert(err.message); // show Firebase error
+    console.error(err);
+  }
+};
+
+
+const handleLogout = async () => {
+  await signOut(auth);
+  setScreen("landing");
+};
 
   useEffect(() => {
   detectLocation();
 }, []);
-
 
   // 📍 Location
 const detectLocation = () => {
@@ -165,50 +235,149 @@ Try it yourself:
     );
   };
 
-  /* ================= LANDING ================= */
-  if (screen === "landing") {
-    return (
-      <div className="container">
-        <div className="app-shell">
-          <div className="app-header">
-            <div className="app-logo">DecideForUs AI</div>
-            <div className="app-title">Food & Place Decision Assistant</div>
+ // ... KEEP ALL YOUR IMPORTS AND STATES SAME ABOVE
+
+ /* ================= LOGIN ================= */
+if (!user && !loadingAuth) {
+  return (
+   <div className="auth-container">
+  <div className="auth-card">
+
+    <h2 className="auth-title">Welcome to DecideForUs</h2>
+    <p className="auth-subtitle">Login to continue</p>
+
+    <button
+      className="google-btn"
+      onClick={handleGoogleLogin}
+    >
+      Continue with Google
+    </button>
+
+    <div className="auth-divider">OR</div>
+
+    <input
+      type="email"
+      placeholder="Email"
+      className="auth-input"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+    />
+
+    <input
+      type="password"
+      placeholder="Password"
+      className="auth-input"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+    />
+
+    <button
+      className="auth-btn"
+      onClick={handleLogin}
+    >
+      Login
+    </button>
+
+    <button
+      className="auth-btn"
+      style={{ background: "#111827", marginTop: "10px" }}
+      onClick={handleSignup}
+    >
+      Sign Up
+    </button>
+
+    <p className="auth-switch">
+      New here? <span onClick={handleSignup}>Create account</span>
+    </p>
+
+  </div>
+</div>
+
+  );
+}
+
+
+/* ================= LANDING ================= */
+if (screen === "landing") {
+  return (
+    <div className="landing-container light-theme">
+
+      {/* Navbar */}
+      <nav className="landing-nav">
+        <div className="nav-logo">DecideForUs</div>
+
+        {user ? (
+          <div className="nav-user">
+
+            <span>
+              {user.displayName || user.email}
+            </span>
+
+            <button
+              className="nav-login-btn"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+
           </div>
-
-          <div className="card">
-            <div className="screen">
-              <h1>Can’t decide what to eat?</h1>
-              <p>We’ll decide for you.</p>
-
-              <div className="card-actions">
-                <button
-                  className="btn-primary"
-                  disabled={!location.lat || !location.lng}
-                  onClick={() => setScreen("q1")}
-                >
-                  Start Decision
-                </button>
+        ) : (
+          <button
+            className="nav-login-btn"
+            onClick={handleGoogleLogin}
+          >
+            Login
+          </button>
+        )}
 
 
+      </nav>
 
+      {/* Hero */}
+      <div className="landing-hero">
 
+        <h1 className="landing-title">
+          Stop Overthinking.
+          <br />
+          Let AI Decide Your Meal.
+        </h1>
 
-                {locationError && (
-                  <p className="helper-text warn">
-                    Location not allowed. Showing popular places near you.
-                  </p>
-                )}
+        <p className="landing-subtitle">
+          Answer 5 simple questions and get the best restaurant near you —
+          instantly.
+        </p>
 
-                <p className="helper-text">
-                  We use your location only to suggest nearby places. Nothing is stored.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <button
+          className="landing-cta-btn"
+          disabled={!location.lat || !location.lng}
+          onClick={() => user && setScreen("q1")}
+
+        >
+          Get Started →
+        </button>
+
+        {!location.lat && (
+          <p className="helper-text warn">
+            📍 Please allow location to get nearby results.
+          </p>
+        )}
+
+        {locationError && (
+          <p className="helper-text warn">
+            {locationError}
+          </p>
+        )}
+
+        <p className="landing-footer-text">
+          🔒 We never store your location. 100% private.
+        </p>
+
       </div>
-    );
-  }
+
+      
+    </div>
+  );
+}
 
      // ========== QUESTION 1 ==========
   if (screen === "q1") {

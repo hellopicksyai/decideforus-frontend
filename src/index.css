@@ -108,7 +108,7 @@ p {
 
 /* ===== Buttons ===== */
 button {
-  width: 100%;
+  /* width: 100%; */
   border: none;
   border-radius: 12px;
   padding: 14px 16px;

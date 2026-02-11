@@ -1,5 +1,5 @@
 #root {
-  max-width: 1280px;
+  /* max-width: 1280px; */
   margin: 0 auto;
   /* padding: 2rem; */
   text-align: center;
@@ -114,6 +114,8 @@
   animation-delay: 0.4s;
 }
 
+
+
 @keyframes blink {
   0% { opacity: 0.2; }
   20% { opacity: 1; }
@@ -143,3 +145,244 @@
 .read-the-docs {
   color: #888;
 }
+
+/* ===== Landing Page ===== */
+
+.landing-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc, #eef2ff);
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 32px;
+}
+
+.nav-logo {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.nav-login-btn {
+  border: none;
+  background: transparent;
+  font-weight: 600;
+  cursor: pointer;
+  color: #2563eb;
+}
+
+.landing-hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.landing-title {
+  font-size: 42px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 16px;
+}
+
+.landing-subtitle {
+  font-size: 18px;
+  max-width: 520px;
+  color: #475569;
+  margin-bottom: 28px;
+}
+
+.landing-cta-btn {
+  padding: 14px 28px;
+  font-size: 16px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.landing-cta-btn:hover {
+  background: #1d4ed8;
+}
+
+.landing-cta-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.landing-footer-text {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* ===== Mobile ===== */
+
+@media (max-width: 768px) {
+  .landing-title {
+    font-size: 30px;
+  }
+
+  .landing-subtitle {
+    font-size: 16px;
+  }
+
+  .landing-nav {
+    padding: 16px 20px;
+  }
+}
+
+/* ========== LOGIN PAGE ========== */
+
+.auth-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a, #020617);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 35px 30px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+.auth-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.auth-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 25px;
+}
+
+/* Inputs */
+
+.auth-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 15px;
+  margin-bottom: 14px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.auth-input:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.15);
+}
+
+/* Buttons */
+
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background: #7c3aed;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 5px;
+  transition: 0.2s;
+}
+
+.auth-btn:hover {
+  background: #6d28d9;
+}
+
+/* Google Button */
+
+.google-btn {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: 0.2s;
+}
+
+.google-btn:hover {
+  background: #f9fafb;
+}
+
+/* Divider */
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+/* Switch */
+
+.auth-switch {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.auth-switch span {
+  color: #7c3aed;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.auth-switch span:hover {
+  text-decoration: underline;
+}
+
+/* Mobile */
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 25px 20px;
+  }
+
+  .auth-title {
+    font-size: 24px;
+  }
+}
+
