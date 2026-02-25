@@ -453,4 +453,159 @@
   color: red;
 }
 
+/* ================= QUESTION UI ================= */
 
+.question-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc, #eef2ff);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Header */
+.question-header {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.question-header button {
+  background: none;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Card */
+.question-card {
+  background: white;
+  width: 100%;
+  max-width: 420px;
+  padding: 28px;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+/* Progress */
+.progress-bar {
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg,#7c3aed,#6366f1);
+}
+
+/* Text */
+.question-card h2 {
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+
+.question-sub {
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+/* Options */
+.question-options {
+  display: grid;
+  gap: 12px;
+}
+
+.question-option {
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-weight: 500;
+}
+
+.question-option:hover {
+  background: #7c3aed;
+  color: white;
+  border-color: #7c3aed;
+  transform: translateY(-2px);
+}
+
+/* ===== Thinking Theme (Light like Q1) ===== */
+
+.thinking-theme {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc, #eef2ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thinking-theme .card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+}
+
+.thinking-theme h2 {
+  color: #111827;
+}
+
+.thinking-theme .thinking-text {
+  color: #6b7280;
+}
+
+.thinking-theme .dot-loader span {
+  background: #7c3aed;
+}
+
+
+
+/* ===== Result Theme (Light like Q1) ===== */
+
+.result-theme {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc, #eef2ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-theme .card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+}
+
+.result-theme h2 {
+  color: #111827;
+}
+
+.result-theme h3 {
+  margin-top: 10px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.result-theme p {
+  color: #6b7280;
+}
+
+.result-theme .meta {
+  font-size: 13px;
+  margin-top: 10px;
+  color: #9ca3af;
+}

@@ -411,402 +411,394 @@ if (screen === "landing") {
   );
 }
 
-     // ========== QUESTION 1 ==========
-  if (screen === "q1") {
-    return (
-      <div className="container">
-        <div className="app-shell">
-          <div className="app-header">
-            <div className="header-actions">
-              <button className="btn-option" onClick={goBack}>
-                ← Back
-              </button>
 
-              <button className="btn-option" onClick={restartFlow}>
-                ↻ Restart
-              </button>
-            </div>
-      
-            <div className="app-logo">DecideForUs AI</div>
-            <div className="app-title">Food & Place Decision Assistant</div>
-          </div>
+ // ========== QUESTION 1 ==========
+if (screen === "q1") {
+  return (
+    <div className="question-page">
 
-          <div className="card">
-            <div className="screen">
-              <p className="progress">
-                Step 1 of 5 • Almost there
-              </p>
-              <h2>Who are you going with?</h2>
-
-              <div className="option-wrap">
-                <OptionButton
-                  label="Friends"
-                  onClick={() => {
-                    setGoingWith("friends");
-                    setScreen("q2");
-                  }}
-                />
-
-                <OptionButton
-                  label="Date / Partner"
-                  onClick={() => {
-                    setGoingWith("date");
-                    setScreen("q2");
-                  }}
-                />
-
-                <OptionButton
-                  label="Family"
-                  onClick={() => {
-                    setGoingWith("family");
-                    setScreen("q2");
-                  }}
-                />
-
-                <OptionButton
-                  label="Office Team"
-                  onClick={() => {
-                    setGoingWith("office");
-                    setScreen("q2");
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Top Bar */}
+      <div className="question-header">
+        <button onClick={goBack}>← Back</button>
+        <span>Step 1 of 5</span>
+        <button onClick={restartFlow}>↻ Restart</button>
       </div>
-    );
-  }
+
+      {/* Card */}
+      <div className="question-card">
+
+        {/* Progress */}
+        <div className="progress-bar">
+          <div className="progress-fill" style={{ width: "20%" }}></div>
+        </div>
+
+        <h2>Who are you going with?</h2>
+        <p className="question-sub">
+          Help us understand your plan better
+        </p>
+
+        <div className="question-options">
+
+          <button
+            className="question-option"
+            onClick={() => {
+              setGoingWith("friends");
+              setScreen("q2");
+            }}
+          >
+            👯 Friends
+          </button>
+
+          <button
+            className="question-option"
+            onClick={() => {
+              setGoingWith("date");
+              setScreen("q2");
+            }}
+          >
+            ❤️ Date / Partner
+          </button>
+
+          <button
+            className="question-option"
+            onClick={() => {
+              setGoingWith("family");
+              setScreen("q2");
+            }}
+          >
+            👨‍👩‍👧 Family
+          </button>
+
+          <button
+            className="question-option"
+            onClick={() => {
+              setGoingWith("office");
+              setScreen("q2");
+            }}
+          >
+            💼 Office Team
+          </button>
+
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
 
   // ========== QUESTION 2 ==========
-  if (screen === "q2") {
-    return (
-      <div className="container">
-        <div className="app-shell">
-          <div className="app-header">
-            <div className="header-actions">
-              <button className="btn-option" onClick={goBack}>
-                ← Back
-              </button>
+if (screen === "q2") {
+  return (
+    <div className="question-page">
 
-              <button className="btn-option" onClick={restartFlow}>
-                ↻ Restart
-              </button>
-            </div>
-
-
-            
-            <div className="app-logo">DecideForUs AI</div>
-            <div className="app-title">Food & Place Decision Assistant</div>
-          </div>
-
-          <div className="card">
-            <div className="screen">
-              <p className="progress">
-                Step 2 of 5 • Almost there
-              </p>
-
-              <h2>When is the plan?</h2>
-
-              <div className="option-wrap">
-                <OptionButton
-                  label="Lunch"
-                  onClick={() => {
-                    setTime("lunch");
-                    setScreen("q3");
-                  }}
-                />
-
-                <OptionButton
-                  label="Dinner"
-                  onClick={() => {
-                    setTime("dinner");
-                    setScreen("q3");
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="question-header">
+        <button onClick={goBack}>← Back</button>
+        <span>Step 2 of 5</span>
+        <button onClick={restartFlow}>↻ Restart</button>
       </div>
-    );
-  }
+
+      <div className="question-card">
+
+        <div className="progress-bar">
+          <div
+            className="progress-fill"
+            style={{ width: "40%" }}
+          ></div>
+        </div>
+
+        <h2>When is the plan?</h2>
+
+        <p className="question-sub">
+          Choose your meal time
+        </p>
+
+        <div className="question-options">
+
+          <button
+            className="question-option"
+            onClick={() => {
+              setTime("lunch");
+              setScreen("q3");
+            }}
+          >
+            🍱 Lunch
+          </button>
+
+          <button
+            className="question-option"
+            onClick={() => {
+              setTime("dinner");
+              setScreen("q3");
+            }}
+          >
+            🌙 Dinner
+          </button>
+
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
 
   // ========== QUESTION 3 ==========
-  if (screen === "q3") {
-    return (
-      <div className="container">
-        <div className="app-shell">
-          <div className="app-header">
-            <div className="header-actions">
-              <button className="btn-option" onClick={goBack}>
-                ← Back
-              </button>
+ if (screen === "q3") {
+  return (
+    <div className="question-page">
 
-              <button className="btn-option" onClick={restartFlow}>
-                ↻ Restart
-              </button>
-            </div>
-
-
-            
-            <div className="app-logo">DecideForUs AI</div>
-            <div className="app-title">Food & Place Decision Assistant</div>
-          </div>
-
-          <div className="card">
-            <div className="screen">
-              <p className="progress">
-                Step 3 of 5 • Almost there
-              </p>
-
-              <h2>What’s the vibe?</h2>
-
-              <div className="option-wrap">
-                <OptionButton
-                  label="Casual"
-                  onClick={() => {
-                    setMood("casual");
-                    setScreen("q4");
-                  }}
-                />
-
-                <OptionButton
-                  label="Quiet"
-                  onClick={() => {
-                    setMood("quiet");
-                    setScreen("q4");
-                  }}
-                />
-
-                <OptionButton
-                  label="Fun"
-                  onClick={() => {
-                    setMood("fun");
-                    setScreen("q4");
-                  }}
-                />
-
-                <OptionButton
-                  label="Romantic"
-                  onClick={() => {
-                    setMood("romantic");
-                    setScreen("q4");
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="question-header">
+        <button onClick={goBack}>← Back</button>
+        <span>Step 3 of 5</span>
+        <button onClick={restartFlow}>↻ Restart</button>
       </div>
-    );
-  }
+
+      <div className="question-card">
+
+        <div className="progress-bar">
+          <div
+            className="progress-fill"
+            style={{ width: "60%" }}
+          ></div>
+        </div>
+
+        <h2>What’s the vibe?</h2>
+
+        <p className="question-sub">
+          Select your mood
+        </p>
+
+        <div className="question-options">
+
+          {["Casual","Quiet","Fun","Romantic"].map((moodItem) => (
+            <button
+              key={moodItem}
+              className="question-option"
+              onClick={() => {
+                setMood(moodItem.toLowerCase());
+                setScreen("q4");
+              }}
+            >
+              {moodItem}
+            </button>
+          ))}
+
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
 
   // ========== QUESTION 4 ==========
-  if (screen === "q4") {
-    return (
-      <div className="container">
-        <div className="app-shell">
-          <div className="app-header">
-            <div className="header-actions">
-              <button className="btn-option" onClick={goBack}>
-                ← Back
-              </button>
+ if (screen === "q4") {
+  return (
+    <div className="question-page">
 
-              <button className="btn-option" onClick={restartFlow}>
-                ↻ Restart
-              </button>
-            </div>
-
-
-            
-            <div className="app-logo">DecideForUs AI</div>
-            <div className="app-title">Food & Place Decision Assistant</div>
-          </div>
-
-          <div className="card">
-            <div className="screen">
-              <p className="progress">
-                Step 4 of 5 • Almost there
-              </p>
-
-              <h2>Food preference?</h2>
-
-              <div className="option-wrap">
-                <OptionButton
-                  label="Veg"
-                  onClick={() => {
-                    setFoodType("veg");
-                    setScreen("q5");
-                  }}
-                />
-
-                <OptionButton
-                  label="Non-veg"
-                  onClick={() => {
-                    setFoodType("non-veg");
-                    setScreen("q5");
-                  }}
-                />
-
-                <OptionButton
-                  label="Mixed"
-                  onClick={() => {
-                    setFoodType("mixed");
-                    setScreen("q5");
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="question-header">
+        <button onClick={goBack}>← Back</button>
+        <span>Step 4 of 5</span>
+        <button onClick={restartFlow}>↻ Restart</button>
       </div>
-    );
-  }
+
+      <div className="question-card">
+
+        <div className="progress-bar">
+          <div
+            className="progress-fill"
+            style={{ width: "80%" }}
+          ></div>
+        </div>
+
+        <h2>Food preference?</h2>
+
+        <p className="question-sub">
+          Choose your diet
+        </p>
+
+        <div className="question-options">
+
+          <button
+            className="question-option"
+            onClick={() => {
+              setFoodType("veg");
+              setScreen("q5");
+            }}
+          >
+            🥦 Veg
+          </button>
+
+          <button
+            className="question-option"
+            onClick={() => {
+              setFoodType("non-veg");
+              setScreen("q5");
+            }}
+          >
+            🍗 Non-Veg
+          </button>
+
+          <button
+            className="question-option"
+            onClick={() => {
+              setFoodType("mixed");
+              setScreen("q5");
+            }}
+          >
+            🍽️ Mixed
+          </button>
+
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
 
   // ========== QUESTION 5 ==========
   if (screen === "q5") {
-    return (
-      <div className="container">
-        <div className="app-shell">
-          <div className="app-header">
-            <div className="header-actions">
-              <button className="btn-option" onClick={goBack}>
-                ← Back
-              </button>
+  return (
+    <div className="question-page">
 
-              <button className="btn-option" onClick={restartFlow}>
-                ↻ Restart
-              </button>
-            </div>
-
-
-            
-            <div className="app-logo">DecideForUs AI</div>
-            <div className="app-title">Food & Place Decision Assistant</div>
-          </div>
-
-          <div className="card">
-            <div className="screen">
-              <p className="progress">
-                Step 5 of 5 • Almost there
-              </p>
-
-              <h2>Budget per person?</h2>
-
-              <div className="option-wrap">
-                <OptionButton
-                  label="₹ Budget"
-                  onClick={() => {
-                    setBudget("low");
-                    setScreen("thinking");
-                  }}
-                />
-
-                <OptionButton
-                  label="₹₹ Moderate"
-                  onClick={() => {
-                    setBudget("medium");
-                    setScreen("thinking");
-                  }}
-                />
-
-                <OptionButton
-                  label="₹₹₹ Premium"
-                  onClick={() => {
-                    setBudget("high");
-                    setScreen("thinking");
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="question-header">
+        <button onClick={goBack}>← Back</button>
+        <span>Step 5 of 5</span>
+        <button onClick={restartFlow}>↻ Restart</button>
       </div>
-    );
-  }
+
+      <div className="question-card">
+
+        <div className="progress-bar">
+          <div
+            className="progress-fill"
+            style={{ width: "100%" }}
+          ></div>
+        </div>
+
+        <h2>Budget per person?</h2>
+
+        <p className="question-sub">
+          Select your budget range
+        </p>
+
+        <div className="question-options">
+
+          <button
+            className="question-option"
+            onClick={() => {
+              setBudget("low");
+              setScreen("thinking");
+            }}
+          >
+            ₹ Budget
+          </button>
+
+          <button
+            className="question-option"
+            onClick={() => {
+              setBudget("medium");
+              setScreen("thinking");
+            }}
+          >
+            ₹₹ Moderate
+          </button>
+
+          <button
+            className="question-option"
+            onClick={() => {
+              setBudget("high");
+              setScreen("thinking");
+            }}
+          >
+            ₹₹₹ Premium
+          </button>
+
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
 
   // ========== THINKING ==========
-  if (screen === "thinking") {
-    return (
-      <div className="container">
-        <div className="app-shell">
-          <div className="app-header">
-            <div className="app-logo">DecideForUs AI</div>
-            <div className="app-title">Food & Place Decision Assistant</div>
-          </div>
+if (screen === "thinking") {
+  return (
+    <div className="container thinking-theme">
+      <div className="app-shell">
+        <div className="app-header">
+          <div className="app-logo">DecideForUs AI</div>
+          <div className="app-title">Food & Place Decision Assistant</div>
+        </div>
 
-          <div className="card">
-            <div className="screen">
-                <h2>Thinking 🤔</h2>
-                <p className="thinking-text">
-                  {THINKING_STEPS[thinkingIndex]}...
-                </p>
-                <div className="dot-loader">
-                  <span></span><span></span><span></span>
-                </div>
+        <div className="card">
+          <div className="screen">
+            <h2>Thinking 🤔</h2>
+            <p className="thinking-text">
+              {THINKING_STEPS[thinkingIndex]}...
+            </p>
+
+            <div className="dot-loader">
+              <span></span><span></span><span></span>
             </div>
           </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
+
 
     // ========== RESULT ==========
-  if (screen === "result") {
-    const rec = recommendation;
+ if (screen === "result") {
+  return (
+    <div className="container result-theme">
+      <div className="app-shell">
+        <div className="app-header">
+          <div className="app-logo">DecideForUs AI</div>
+          <div className="app-title">Food & Place Decision Assistant</div>
+        </div>
 
-    return (
-      <div className="container">
-        <div className="app-shell">
-          <div className="app-header">
-            
-    
-            <div className="app-logo">DecideForUs AI</div>
-            <div className="app-title">Food & Place Decision Assistant</div>
-          </div>
+        <div className="card">
+          <div className="screen">
+            <h2>Here’s our recommendation</h2>
 
-          <div className="card">
-           <div className="screen">
-              <h2>Here’s our recommendation</h2>
+            <span className="badge">High confidence</span>
 
-              {error && <p style={{ color: "red" }}>{error}</p>}
-              
-              <span className="badge">High confidence</span>
+            <h3>{recommendation?.name}</h3>
+            <p>{recommendation?.reason}</p>
 
-              <h3>{recommendation?.name || "Popular Local Restaurant"}</h3>
-              <p>{recommendation?.reason || "A trusted nearby option chosen for you."}</p>
+            <p className="meta">
+              {goingWith} • {time} • {mood} • {foodType} • {budget}
+            </p>
 
+            <div className="result-actions">
+              <button
+                className="btn-primary btn-restart"
+                onClick={restartFlow}
+              >
+                Start Again
+              </button>
 
+              <button
+                className="btn-secondary btn-share"
+                onClick={shareOnWhatsApp}
+              >
+                Share on WhatsApp
+              </button>
+            </div>
 
-
-              <p className="meta">
-                {goingWith} • {time} • {mood} • {foodType} • {budget}
-              </p>
-
-              <div className="result-actions">
-                <button
-                  className="btn-primary btn-restart"
-                  onClick={() => setScreen("landing")}
-                >
-                  Start Again
-                </button>
-                
-                <button
-                  className="btn-secondary btn-share"
-                  onClick={() => shareOnWhatsApp(recommendation)}
-                >
-                  Share on WhatsApp
-                </button>
-
-              </div>
-
-           </div>
           </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
 
   return null;
 }
